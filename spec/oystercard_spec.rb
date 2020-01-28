@@ -15,12 +15,20 @@ describe Oystercard do
 
   describe '#touch_in' do
     it 'should equal true when in journey' do
+      subject.top_up(50)
       expect { subject.touch_in }.to change{ subject.state }.to true
+    end
+
+    it 'raises an error if there is not enough money' do
+      # minimum_balance = Oystercard::MINIMUM_BALANCE
+      # subject.top_up(minimum_balance)
+        expect {subject.touch_in}.to raise_error "You do not have enough funds"
     end
   end
 
   describe '#touch_out' do
     it 'should equal false when not in journey' do
+      subject.top_up(3)
       subject.touch_in
       expect { subject.touch_out }.to change{ subject.state }.to false
     end

@@ -1,6 +1,7 @@
 class Oystercard
 
   MAXIMUM_BALANCE = 90 
+  MINIMUM_BALANCE = 1
   attr_reader :balance
   attr_accessor :state
 
@@ -24,6 +25,7 @@ class Oystercard
   end
 
   def touch_in
+    fail "You do not have enough funds" if @balance < MINIMUM_BALANCE
     @state = true
   end
 
