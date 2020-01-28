@@ -33,6 +33,10 @@ describe Oystercard do
         expect { subject.deduct(3) }.to change{ subject.balance }.by -3
       end
     end
+<<<<<<< HEAD
 
     
 end 
+=======
+end
+>>>>>>> 2c65a533c28fba16541117a626d2f273e44e757f

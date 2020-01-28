@@ -23,5 +23,3 @@ class Oystercard
   end
 
 end
-
-
