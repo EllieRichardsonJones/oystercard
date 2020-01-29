@@ -1,5 +1,7 @@
 describe Oystercard do
-  let(:station){ double :station }  
+  let(:entry_station){ double :station }  
+  let(:exit_station){ double :station }
+  let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
 
   it 'initializes with a default balance of 0' do
     expect(subject.balance).to eq 0
@@ -12,7 +14,7 @@ describe Oystercard do
     it 'is expects to be in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      subject.touch_in(station)
+      subject.touch_in(entry_station)
       expect(subject).to be_in_journey
     end
   end
@@ -21,20 +23,20 @@ describe Oystercard do
     it 'should equal true when in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      expect { subject.touch_in(station) }.to change{ subject.state }.to true
+      expect { subject.touch_in(entry_station) }.to change{ subject.state }.to true
     end
 
     it 'raises an error if there is not enough money' do
       # minimum_balance = Oystercard::MINIMUM_BALANCE
       # subject.top_up(minimum_balance)
-        expect {subject.touch_in(station)}.to raise_error "You do not have enough funds"
+        expect {subject.touch_in(entry_station)}.to raise_error "You do not have enough funds"
     end
 
     it 'stores the entry station' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      subject.touch_in(station)
-      expect(subject.entry_station).to eq station
+      subject.touch_in(entry_station)
+      expect(subject.entry_station).to eq entry_station
     end
   end
 
@@ -42,13 +44,13 @@ describe Oystercard do
     it 'should equal false when not in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      subject.touch_in(station)
-      expect { subject.touch_out }.to change{ subject.state }.to false
+      subject.touch_in(entry_station)
+      expect { subject.touch_out(exit_station) }.to change{ subject.state }.to false
     end
     it 'should deduct the minimum fare' do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
-      subject.touch_in(station)
-      expect { subject.touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_CHARGE)
+      subject.touch_in(entry_station)
+      expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by (-Oystercard::MINIMUM_CHARGE)
     end
   end
 
@@ -65,4 +67,21 @@ describe Oystercard do
     end
   end
 
+  it 'stores an exit station' do
+    subject.top_up(Oystercard::MINIMUM_BALANCE)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.exit_station).to eq exit_station
+  end
+
+  it 'has an empty list of journeys by default' do
+    expect(subject.journeys).to be_empty
+  end
+  
+  it 'stores a journey' do
+    subject.top_up(Oystercard::MINIMUM_BALANCE)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.journeys).to include journey
+  end
 end
