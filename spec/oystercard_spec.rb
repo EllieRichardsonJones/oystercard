@@ -1,4 +1,6 @@
 describe Oystercard do
+  let(:station){ double :station }  
+
   it 'initializes with a default balance of 0' do
     expect(subject.balance).to eq 0
   end
@@ -8,7 +10,9 @@ describe Oystercard do
       expect(subject).not_to be_in_journey
     end
     it 'is expects to be in journey' do
-      subject.state = true
+      minimum_balance = Oystercard::MINIMUM_BALANCE
+      subject.top_up(minimum_balance)
+      subject.touch_in(station)
       expect(subject).to be_in_journey
     end
   end
@@ -17,13 +21,20 @@ describe Oystercard do
     it 'should equal true when in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      expect { subject.touch_in }.to change{ subject.state }.to true
+      expect { subject.touch_in(station) }.to change{ subject.state }.to true
     end
 
     it 'raises an error if there is not enough money' do
       # minimum_balance = Oystercard::MINIMUM_BALANCE
       # subject.top_up(minimum_balance)
-        expect {subject.touch_in}.to raise_error "You do not have enough funds"
+        expect {subject.touch_in(station)}.to raise_error "You do not have enough funds"
+    end
+
+    it 'stores the entry station' do
+      minimum_balance = Oystercard::MINIMUM_BALANCE
+      subject.top_up(minimum_balance)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
     end
   end
 
@@ -31,13 +42,13 @@ describe Oystercard do
     it 'should equal false when not in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
-      subject.touch_in
+      subject.touch_in(station)
       expect { subject.touch_out }.to change{ subject.state }.to false
     end
     it 'should deduct the minimum fare' do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
-      subject.touch_in
-      expect { subject.touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_BALANCE)
+      subject.touch_in(station)
+      expect { subject.touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_CHARGE)
     end
   end
 
