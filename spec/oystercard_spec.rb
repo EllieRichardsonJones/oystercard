@@ -11,6 +11,7 @@ describe Oystercard do
     it 'is initially not in a journey' do
       expect(subject).not_to be_in_journey
     end
+
     it 'is expects to be in journey' do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       subject.top_up(minimum_balance)
@@ -27,8 +28,6 @@ describe Oystercard do
     end
 
     it 'raises an error if there is not enough money' do
-      # minimum_balance = Oystercard::MINIMUM_BALANCE
-      # subject.top_up(minimum_balance)
         expect {subject.touch_in(entry_station)}.to raise_error "You do not have enough funds"
     end
 
@@ -59,6 +58,7 @@ describe Oystercard do
       minimum_balance = Oystercard::MINIMUM_BALANCE
       expect { subject.top_up(minimum_balance) }.to change{ subject.balance }.by minimum_balance
     end
+    
     it 'raises an error if the maximum balance is exceeded' do
       maximum_balance = Oystercard::MAXIMUM_BALANCE
       minimum_balance = Oystercard::MINIMUM_BALANCE

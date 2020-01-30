@@ -10,13 +10,12 @@ class Oystercard
     @balance = 0
     @state = false
     @entry_station = nil
-    @journeys = {}
+    @journeys = []
     @exit_station = nil
   end
 
   def top_up(amount)
     fail "you have reached your limit of #{MAXIMUM_BALANCE}" if @balance + amount > MAXIMUM_BALANCE
-
     @balance += amount
   end 
 
@@ -28,7 +27,6 @@ class Oystercard
     fail "You do not have enough funds" if @balance < MINIMUM_BALANCE
     @state = true
     @entry_station = station
-    @journeys.store(:entry_station, station)
   end
 
   def touch_out(station)
@@ -36,7 +34,7 @@ class Oystercard
     @entry_station
     @state = false
     @exit_station = station
-    @journeys.store(:exit_station, station)
+    @journeys << {entry_station: @entry_station, exit_station: @exit_station}
   end
 
   private
